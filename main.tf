@@ -6,6 +6,7 @@
   vlan_id             = "${var.hub_vlan_id}"
 }*/
 
+/* Wird mit DNS erstellt
 resource "vsphere_folder" "folder" {
   path = "GP/${var.hub_network_name}"
   type = "vm"
@@ -15,7 +16,7 @@ resource "vsphere_folder" "folder" {
 resource "time_sleep" "wait_30_seconds" {
   depends_on = [vsphere_folder.folder] # [vsphere_host_port_group.pg,vsphere_folder.folder]
   create_duration = "30s"
-}
+}*/
 
 resource vsphere_virtual_machine "awx" {
   count           = var.awx_vm_count
