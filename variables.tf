@@ -17,6 +17,16 @@ variable "hub_network_name" {
   description = "Name of the network."
 }
 
+variable "hub_network" {
+  type = string
+  description = "Specify the network for this hub network."
+}
+
+variable "hub_netmask" {
+  type = string
+  description = "Specify the netmask for the hub network."
+}
+
 /*variable "hub_vlan_id" {
   type = number
   description = "Specify the vlan id associated to the network."

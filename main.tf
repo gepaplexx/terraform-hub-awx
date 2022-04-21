@@ -20,7 +20,7 @@ resource "time_sleep" "wait_30_seconds" {
 
 resource vsphere_virtual_machine "awx" {
   count           = var.awx_vm_count
-  name             = "gp-central-awx${count.index}-TEST"
+  name             = "gp-central-awx${count.index}"
   resource_pool_id = data.vsphere_compute_cluster.cc.resource_pool_id
   datastore_id     = data.vsphere_datastore.ds.id
   folder           = "GP/${var.hub_network_name}"
@@ -55,9 +55,17 @@ resource vsphere_virtual_machine "awx" {
 
   vapp {
     properties ={
-      hostname = "awx${count.index}"
+      hostname = "gp-central-awx${count.index}"
       user-data = base64encode(templatefile("${path.module}/cloudinit/cloud-config.yaml.tpl", {
         authorized_key = var.authorized_key
+        network_config = templatefile("${path.module}/cloudinit/network-config.yaml.tpl", {
+          network_config_content_base64 = base64encode(templatefile("${path.module}/cloudinit/network-config-content.yaml.tpl", {
+            dns     = "${var.hub_network}.1"
+            gateway = "${var.hub_network}.254"
+            netmask = var.hub_netmask
+            network = "${var.hub_network}.${count.index + 2}"
+          }))
+        })
       }))
     }
   }
