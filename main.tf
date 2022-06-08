@@ -42,11 +42,25 @@ resource vsphere_virtual_machine "awx" {
   }
   wait_for_guest_net_timeout = 0
 
+/*
   disk {
     label            = "disk0"
     size             = var.awx_disk_size
     eagerly_scrub    = data.vsphere_virtual_machine.template.disks[0].eagerly_scrub
     thin_provisioned = data.vsphere_virtual_machine.template.disks[0].thin_provisioned
+  }
+*/
+
+  disk {
+    label            = "disk0"
+    size             = var.awx_disk_size
+    unit_number      = 0
+  }
+
+  disk {
+    label            = "disk1"
+    size             = 10
+    unit_number      = 1
   }
 
   clone {
