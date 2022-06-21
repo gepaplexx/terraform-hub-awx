@@ -3,6 +3,11 @@ variable "authorized_key" {
   description = "authorized key used to log in to all vms in the hub network."
 }
 
+variable "ssh_private_key" {
+  type = string
+  description = "ssh key to connect to the awx hosts."
+}
+
 ###############################
 # Hub network configuration #
 ###############################
