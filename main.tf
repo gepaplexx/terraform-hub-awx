@@ -1,23 +1,3 @@
-/*resource "vsphere_host_port_group" "pg" {
-  count               = "${length(var.vmware_esxi_hosts)}"
-  name                = "${var.hub_network_name}"
-  host_system_id      = "${data.vsphere_host.host[count.index].id}"
-  virtual_switch_name = "${var.hub_vswitch}"
-  vlan_id             = "${var.hub_vlan_id}"
-}*/
-
-/* Wird mit DNS erstellt */
-/*resource "vsphere_folder" "folder" {
-  path = "GP/${var.hub_network_name}"
-  type = "vm"
-  datacenter_id = data.vsphere_datacenter.dc.id
-}
-
-resource "time_sleep" "wait_30_seconds" {
-  depends_on = [vsphere_folder.folder] # [vsphere_host_port_group.pg,vsphere_folder.folder]
-  create_duration = "30s"
-}*/
-
 locals {
   # flexible number of data disks for VM
   # mount as disk or LVM is done by remote-exec script
@@ -49,7 +29,7 @@ resource vsphere_virtual_machine "awx" {
     network_id   = data.vsphere_network.network.id
     adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
     use_static_mac = "true"
-    mac_address = "${var.hub_mac_prefix}:0${count.index + 4}"
+    mac_address = "${var.hub_mac_prefix}:0${count.index + 1}"
   }
   wait_for_guest_net_timeout = 0
 
@@ -81,7 +61,7 @@ resource vsphere_virtual_machine "awx" {
   connection {
     type = "ssh"
     agent = "false"
-    host = "${var.hub_network}.3${count.index + 6}"
+    host = "${var.hub_network}.3${count.index + 1}"
     user = "ansible"
     private_key = var.ssh_private_key
   }
@@ -113,10 +93,10 @@ resource vsphere_virtual_machine "awx" {
         authorized_key = var.authorized_key
         network_config = templatefile("${path.module}/cloudinit/network-config.yaml.tpl", {
           network_config_content_base64 = base64encode(templatefile("${path.module}/cloudinit/network-config-content.yaml.tpl", {
-            dns     = "${var.hub_network}.35" # TODO only for testing
+            dns     = "${var.hub_network}.30"
             gateway = "${var.hub_network}.254"
             netmask = var.hub_netmask
-            network = "${var.hub_network}.3${count.index + 6}" # TODO only for testing
+            network = "${var.hub_network}.3${count.index + 1}"
           }))
         })
       }))
